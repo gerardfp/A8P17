@@ -33,10 +33,14 @@ public class ManagerCorredors2 {
 
             String linea;
             while((linea = fileReader.readLine()) != null){
-                System.out.println(linea);
+                String[] partes = linea.split(":");
+                if(id == Integer.parseInt(partes[1])){
+                    Corredor corredor = new Corredor(partes[0], Integer.parseInt(partes[2]));
+                    corredor.id = id;
+                    return corredor;
+                }
+
             }
-        } catch (FileNotFoundException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -73,10 +77,18 @@ public class ManagerCorredors2 {
     }
 
     public static boolean existeixCorredor(String nom){
-        for (int i = 0; i < corredors.length; i++) {
-            if(corredors[i] != null && corredors[i].nom.toLowerCase().equals(nom.toLowerCase())){
-                return true;
+        try {
+            BufferedReader fileReader = new BufferedReader(new FileReader("corredores.txt"));
+
+            String linea;
+            while((linea = fileReader.readLine()) != null){
+                String[] partes = linea.split(":");
+                if(nom.equals(partes[0])){
+                    return true;
+                }
             }
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return false;
