@@ -4,6 +4,10 @@ import com.company.model.Corredor;
 import com.company.model.Equip;
 
 import java.io.*;
+import java.nio.file.FileSystems;
+import java.nio.file.Files;
+
+import static java.nio.file.StandardCopyOption.REPLACE_EXISTING;
 
 public class ManagerCorredors2 {
     static Corredor[] corredors = new Corredor[100];
@@ -77,6 +81,8 @@ public class ManagerCorredors2 {
     }
 
     public static boolean existeixCorredor(String nom){
+
+
         try {
             BufferedReader fileReader = new BufferedReader(new FileReader("corredores.txt"));
 
@@ -95,11 +101,29 @@ public class ManagerCorredors2 {
     }
 
     public static void modificarNomCorredor(int id, String nouNom){
-        for (int i = 0; i < corredors.length; i++) {
-            if(corredors[i] != null && corredors[i].id == id){
-                corredors[i].nom = nouNom;
+        try {
+            BufferedReader fileReader = new BufferedReader(new FileReader("corredores.txt"));
+            FileWriter fileWriter = new FileWriter("corredores2.txt", true);
+
+            String linea;
+            while((linea = fileReader.readLine()) != null){
+                String[] partes = linea.split(":");
+                if(Integer.parseInt(partes[2]) == id){
+                    fileWriter.write(nouNom);
+                    fileWriter.write(partes[1]);
+                    fileWriter.write(id);
+                }else{
+                    fileWriter.write(linea);
+                }
             }
+            fileWriter.close();
+            fileReader.close();
+            //mv corredores2.txt corredores.txt
+            Files.move(FileSystems.getDefault().getPath("corredores2.txt"), FileSystems.getDefault().getPath("corredores.txt"), REPLACE_EXISTING);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
     }
 
     public static void modificarEquipCorredor(int id, Equip nouEquip){

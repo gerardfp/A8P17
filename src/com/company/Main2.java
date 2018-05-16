@@ -15,5 +15,6 @@ public class Main2 {
 
         boolean corredor = ManagerCorredors2.existeixCorredor("Josep");
         System.out.println(corredor);
+        ManagerCorredors2.modificarNomCorredor(2008, "nyannyan");
     }
 }
