@@ -2,62 +2,42 @@ package com.company.manager;
 
 import com.company.model.Equip;
 
-import java.io.File;
-import java.io.FileWriter;
 import java.io.IOException;
-import java.io.RandomAccessFile;
 import java.nio.ByteBuffer;
 import java.nio.channels.FileChannel;
-import java.nio.charset.Charset;
 import java.nio.file.FileSystems;
 
 import static java.nio.file.StandardOpenOption.CREATE;
-import static java.nio.file.StandardOpenOption.READ;
 import static java.nio.file.StandardOpenOption.WRITE;
-
 
 public class ManagerEquips2 {
     static Equip[] equips = new Equip[100];
-    static int MAXNOM = 12;
+    static int MAXNOM = 6;
     static int MAXID = 4;
 
     public static Equip inscriureEquip(String nom){
 
-        try (FileChannel fc = (FileChannel.open(FileSystems.getDefault().getPath("equips2.txt"), CREATE, READ, WRITE))) {
-            long posFinal = fc.size();
+        try {
+            FileChannel fileChannel = FileChannel.open(FileSystems.getDefault().getPath("equipos.txt"), WRITE, CREATE);
 
-            fc.position(posFinal);
-            fc.write(ByteBuffer.wrap(nom.getBytes()));
+            fileChannel.position(fileChannel.size());
+            fileChannel.write(ByteBuffer.wrap(nom.getBytes()));
+            fileChannel.position(fileChannel.size()+MAXNOM);
+            fileChannel.write(ByteBuffer.wrap("1".getBytes()));
 
-            int id = (int) posFinal/(MAXNOM+MAXID)+1;
-            ByteBuffer byteBuffer = ByteBuffer.allocate(MAXID);
-            byteBuffer.putInt(0,id);
-
-            fc.position(posFinal+MAXNOM);
-            fc.write(byteBuffer);
-
-
-        } catch (IOException x) {
-            System.out.println("I/O Exception: " + x);
+        } catch (IOException e) {
+            e.printStackTrace();
         }
+
 
         return null;
     }
 
     public static Equip obtenirEquip(int id){
-        try (FileChannel fc = (FileChannel.open(FileSystems.getDefault().getPath("equips2.txt"), CREATE, READ, WRITE))) {
-            long posFinal = fc.size();
-            fc.position((id-1)*(MAXNOM+MAXID));
-            ByteBuffer byteBufferNom = ByteBuffer.allocate(MAXNOM);
-
-            fc.read(byteBufferNom);
-
-            String nom = new String(byteBufferNom.array(), Charset.forName("UTF-8"));
-
-            System.out.println("NOM: " + nom);
-
-        } catch (IOException x) {
-            System.out.println("I/O Exception: " + x);
+        for (int i = 0; i < equips.length; i++) {
+            if(equips[i] != null && equips[i].id == id){
+                return equips[i];
+            }
         }
 
         return null;
@@ -138,14 +118,14 @@ public class ManagerEquips2 {
     }
 
     private static int obtenirUltimIdEquip(){
-        int maxId = 0;
-        for (int i = 0; i < equips.length; i++) {
-            if(equips[i] != null && equips[i].id > maxId){
-                maxId = equips[i].id;
-            }
+        try {
+            FileChannel fileChannel = FileChannel.open(FileSystems.getDefault().getPath("equipos.txt"), WRITE, CREATE);
+            return (int) fileChannel.size()/32;
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
-        return maxId;
+        return 0;
     }
 
     private static int obtenirNumeroEquips(){
