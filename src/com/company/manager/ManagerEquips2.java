@@ -24,7 +24,6 @@ public class ManagerEquips2 {
     public static Equip inscriureEquip(String nom){
 
         try (FileChannel fc = (FileChannel.open(FileSystems.getDefault().getPath("equips2.txt"), CREATE, READ, WRITE))) {
-
             long posFinal = fc.size();
 
             fc.position(posFinal);
